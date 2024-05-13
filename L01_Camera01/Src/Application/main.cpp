@@ -4,7 +4,7 @@
 // エントリーポイント
 // アプリケーションはこの関数から進行する
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
-int WINAPI WinMain(_In_ HINSTANCE, _In_opt_  HINSTANCE, _In_ LPSTR , _In_ int)
+int WINAPI WinMain(_In_ HINSTANCE, _In_opt_  HINSTANCE, _In_ LPSTR, _In_ int)
 {
 	// メモリリークを知らせる
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -84,18 +84,36 @@ void Application::Update()
 	Math::Matrix _transMat = Math::Matrix::CreateTranslation(0, 6.0f, -5.0f);
 
 	//カメラのワールド行列を作成し適応させる
-	Math::Matrix _worldMat = _scaleMat*_rotateXMat*_transMat*_rotateYMat;
+	Math::Matrix _worldMat = _scaleMat * _rotateXMat * _transMat * _rotateYMat* m_mHamuWorld;
 	m_spCamera->SetCameraMatrix(_worldMat);
 
 
 	//ハム太郎の更新
 	{
-		if (GetAsyncKeyState('W'))
-			m_HamuPos.y += 5;
+		float moveSpd = 0.05f;
+		Math::Vector3 nowPos = m_mHamuWorld.Translation();
 
-		if (GetAsyncKeyState('A'));
-			if (GetAsyncKeyState('S'));
-				if (GetAsyncKeyState('D'));
+		Math::Vector3 moveVec = Math::Vector3::Zero;
+
+		if (GetAsyncKeyState('W') & 0x8000)
+			moveVec.z = 1.0f;
+
+		if (GetAsyncKeyState('S'))
+			moveVec.z = -1.0f;
+
+		if (GetAsyncKeyState('A'))
+			moveVec.x = -1.0f;
+
+		if (GetAsyncKeyState('D'))
+			moveVec.x = 1.0f;
+
+		moveVec.Normalize();
+		moveVec *= moveSpd;
+		nowPos += moveVec;
+
+		Math::Matrix _hamuTransMat = Math::Matrix::CreateTranslation(nowPos.x,nowPos.y,nowPos.z);
+
+		m_mHamuWorld = _hamuTransMat;
 	}
 }
 
@@ -330,8 +348,8 @@ void Application::Execute()
 
 		if (GetAsyncKeyState(VK_ESCAPE))
 		{
-//			if (MessageBoxA(m_window.GetWndHandle(), "本当にゲームを終了しますか？",
-//				"終了確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+			//			if (MessageBoxA(m_window.GetWndHandle(), "本当にゲームを終了しますか？",
+			//				"終了確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
 			{
 				End();
 			}
