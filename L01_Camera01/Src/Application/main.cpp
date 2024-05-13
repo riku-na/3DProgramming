@@ -64,6 +64,39 @@ void Application::PreUpdate()
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::Update()
 {
+	if (GetAsyncKeyState(VK_UP) & 0x8000)
+	{
+		m_cameraZ += 1;
+	}
+
+	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
+	{
+		m_cameraZ -= 1;
+	}
+
+	//m_cameraRotation++;
+
+	//カメラ行列の更新
+	//
+	Math::Matrix _scaleMat = Math::Matrix::CreateScale(1);
+	Math::Matrix _rotateXMat = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(45));
+	Math::Matrix _rotateYMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_cameraRotation));
+	Math::Matrix _transMat = Math::Matrix::CreateTranslation(0, 6.0f, -5.0f);
+
+	//カメラのワールド行列を作成し適応させる
+	Math::Matrix _worldMat = _scaleMat*_rotateXMat*_transMat*_rotateYMat;
+	m_spCamera->SetCameraMatrix(_worldMat);
+
+
+	//ハム太郎の更新
+	{
+		if (GetAsyncKeyState('W'))
+			m_HamuPos.y += 5;
+
+		if (GetAsyncKeyState('A'));
+			if (GetAsyncKeyState('S'));
+				if (GetAsyncKeyState('D'));
+	}
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -120,8 +153,9 @@ void Application::Draw()
 	// 陰影のあるオブジェクト(不透明な物体や2Dキャラ)はBeginとEndの間にまとめてDrawする
 	KdShaderManager::Instance().m_StandardShader.BeginLit();
 	{
-		Math::Matrix _mat = Math::Matrix::CreateTranslation(0, 0, 5);
-		KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_spPoly,_mat);
+		KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_spPoly, m_mHamuWorld);
+
+		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel);
 	}
 	KdShaderManager::Instance().m_StandardShader.EndLit();
 
@@ -234,7 +268,13 @@ bool Application::Init(int w, int h)
 	//===================================================================
 	m_spPoly = std::make_shared<KdSquarePolygon>();
 	m_spPoly->SetMaterial("Asset/Data/LessonData/Character/Hamu.png");
+	m_spPoly->SetPivot(KdSquarePolygon::PivotType::Center_Bottom);
 
+	//===================================================================
+	// 3Dモデル初期化
+	//===================================================================
+	m_spModel = std::make_shared<KdModelData>();
+	m_spModel->Load("Asset/Data/LessonData/Terrain/Terrain.gltf");
 
 	return true;
 }
