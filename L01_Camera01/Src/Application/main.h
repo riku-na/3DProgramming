@@ -57,13 +57,10 @@ private:
 	float m_cameraZ=5;
 	float m_cameraRotation = 0;
 
-	//板ポリゴン
-	std::shared_ptr<KdSquarePolygon> m_spPoly = nullptr;
-	Math::Matrix m_mHamuWorld = Math::Matrix::Identity;
-	Math::Vector3 m_HamuPos;
+	
 
-	//3Dモデル
-	std::shared_ptr<KdModelData> m_spModel = nullptr;
+	//ゲームオブジェクトリスト
+	std::vector<std::shared_ptr<KdGameObject>> m_GameObjList;
 
 //=====================================================
 // シングルトンパターン
