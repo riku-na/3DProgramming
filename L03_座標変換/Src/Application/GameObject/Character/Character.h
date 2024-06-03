@@ -12,6 +12,15 @@ public:
 	void DrawSprite()		override;
 
 private:
-	std::shared_ptr<KdSquarePolygon> m_spPoly = nullptr;
+	Math::Vector3 m_pos;
+	Math::Vector3 m_nextPos;
 
+	std::shared_ptr<KdSquarePolygon> m_spPoly = nullptr;
+	KdTexture m_tex;
+	Math::Vector3 m_circlePos{};
 };
+
+static inline float Lerp(float a, float b, float t)
+{
+	return a + t * (b - a);
+}

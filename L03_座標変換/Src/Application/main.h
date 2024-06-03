@@ -23,6 +23,10 @@ public:
 
 	std::weak_ptr<KdCamera> GetCamera() { return m_spCamera; }
 
+	const KdWindow& GetWindow()const { return m_window; }
+
+	std::vector<std::shared_ptr<KdGameObject>> GetGameObjList() { return m_GameObjectList; }
+
 private:
 
 	void KdBeginUpdate();
